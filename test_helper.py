@@ -1,7 +1,5 @@
 import datetime
 
-import pytest
-
 import helper
 
 
@@ -18,7 +16,7 @@ def test_sort():
     for todo in todos:
         helper.add(todo[0], todo[1])
 
-    # Then: They should be sorted by date
+    ##### Then: They should be sorted by date
     for i in range(len(helper.items) - 1):
         print(helper.items[i])
         assert helper.items[i].date < helper.items[i + 1].date
@@ -32,6 +30,7 @@ def test_add():
     # When: I add the item
     helper.add(text, date)
 
+    #####
     # Then: The most recently added to-do should have a date
     item = helper.items[-1]
     assert isinstance(item.date, datetime.date)
