@@ -20,6 +20,7 @@ def test_sort():
 
     # Then: They should be sorted by date
     for i in range(len(helper.items) - 1):
+        print(helper.items[i])
         assert helper.items[i].date < helper.items[i + 1].date
 
 
