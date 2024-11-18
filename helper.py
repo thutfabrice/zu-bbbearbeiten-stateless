@@ -1,3 +1,4 @@
+import datetime
 from dataclasses import dataclass
 
 items = []
@@ -6,6 +7,7 @@ items = []
 @dataclass
 class Item:
     text: str
+    date: datetime
     isCompleted: bool = False
 
 
