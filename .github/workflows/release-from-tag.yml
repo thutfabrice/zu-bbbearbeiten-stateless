@@ -9,40 +9,31 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+
     permissions:
       contents: write
+      packages: write
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Publish release
-      id: publish-release
-      uses: ghalactic/github-release-from-tag@v5
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v1
       with:
-         prerelease: "false"
-         reactions: heart,rocket,eyes
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
 
-  executable:
-    runs-on: windows-latest
-    timeout-minutes: 10
-    permissions:
-      contents: write
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-
-    - name: Create Executable
-      uses: sayyid5416/pyinstaller@v1
-      with:
-        python_ver: '3.11'
-        spec: 'main.spec'
-        requirements: 'requirements.txt'
-        upload_exe_with_name: 'zu-bbbearbeiten.exe'
-
-    - name: Upload Release Asset
+    - name: set lower case owner name
+      id: lowercase_username
+      run: |
+        echo "actor=${OWNER,,}" >> $GITHUB_OUTPUT
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run:
-        gh release upload ${{ github.ref_name }} ./dist/main.exe
+        OWNER: '${{ github.repository_owner }}'
+      shell: bash
+
+    - name: Build the Docker container
+      run: |
+            docker build . --tag ghcr.io/${{ steps.lowercase_username.outputs.actor }}/${{ github.event.repository.name }}:latest
+            docker push ghcr.io/${{ steps.lowercase_username.outputs.actor }}/${{ github.event.repository.name }}:latest
